@@ -18,8 +18,6 @@ jobs:
           python-version: 3.10.8
           cache: pip
       - run: pip install -r requirements.txt
-      - run: aws sts get-caller-identity
-        shell: bash
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
