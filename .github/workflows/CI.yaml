@@ -28,6 +28,6 @@ jobs:
       - uses: pulumi/actions@v3
         with:
           command: preview
-          stack-name: request_manager_v2 
+          stack-name: request_mgr_v2 
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
