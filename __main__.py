@@ -27,10 +27,10 @@ role_policy_attachment = aws.iam.RolePolicyAttachment('lambdaRoleAttachment',
 
 # Lambda function
 lambda_function = aws.lambda_.Function('notification-manager',
-    code=pulumi.AssetArchive({".": pulumi.FileArchive("./app")}),
+    code=pulumi.AssetArchive({".": pulumi.FileArchive("./notification_manager")}),
     role=lambda_role.arn,
-    handler='app.lambda_handler',
-    runtime='python3.9'
+    handler='notification_manager.lambda_handler',
+    runtime='python3.10'
 )
 
 # Define an SNS topic
