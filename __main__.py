@@ -25,11 +25,18 @@ role_policy_attachment = aws.iam.RolePolicyAttachment('lambdaRoleAttachment',
     policy_arn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 )
 
-# Lambda function
+# Lambda functions
 lambda_function = aws.lambda_.Function('notification-manager',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./notification_manager")}),
     role=lambda_role.arn,
     handler='notification_manager.lambda_handler',
+    runtime='python3.10'
+)
+
+lambda_function = aws.lambda_.Function('contract_processor',
+    code=pulumi.AssetArchive({".": pulumi.FileArchive("./contract_processor")}),
+    role=lambda_role.arn,
+    handler='contract_processor.lambda_handler',
     runtime='python3.10'
 )
 
