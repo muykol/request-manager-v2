@@ -72,8 +72,37 @@ lambda_function_name_param = aws.ssm.Parameter('notificationManagerlambdaFunctio
     value=lambda_function.name   # The actual value to store, which is the name of the Lambda Function
 )
 
+# Create an SQS queue
+sqs_queue = aws.sqs.Queue('request_manager_queue')
+
+# Create an SQS queue policy to allow the SNS topic to publish to the SQS queue
+queue_policy = aws.sqs.QueuePolicy('request_manager_queue_policy',
+    queue_url=sqs_queue.id,
+    policy=sns_topic.arn.apply(lambda arn: pulumi.Output.secret(json.dumps({
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Principal": {"Service": "sns.amazonaws.com"},
+            "Action": "sqs:SendMessage",
+            "Resource": sqs_queue.arn,
+            "Condition": {
+                "ArnEquals": {"aws:SourceArn": arn}
+            }
+        }]
+    })))
+)
+
+# Store the SQS queue URL in the AWS SSM Parameter Store
+ssm_parameter = aws.ssm.Parameter('request_manager_queue_url',
+    name='request_manager_queue',
+    type='String',
+    value=sqs_queue.id
+)
+
 # Export the ARNs of the SNS topic, the Lambda function and the parameter names 
 pulumi.export('sns_topic_arn', sns_topic.arn)
 pulumi.export('lambda_function_arn', lambda_function.arn)
 pulumi.export('sns_topic_url_param_name', sns_topic_url_param.name)
 pulumi.export('lambda_function_name_param_name', lambda_function_name_param.name)
+pulumi.export('queue_url', sqs_queue.id)
+pulumi.export('ssm_parameter_name', ssm_parameter.name)
