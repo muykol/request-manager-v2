@@ -5,7 +5,7 @@ on:
       - requestMgr
 jobs:
   update:
-    name: Deploy_Notification_Manager
+    name: Deploy_request_manager_service
     runs-on: ubuntu-latest
     permissions:
       id-token: write

@@ -73,7 +73,7 @@ request_policy_document = sqs_queue.arn.apply(lambda arn: aws.iam.get_policy_doc
     conditions=[aws.iam.GetPolicyDocumentStatementConditionArgs(
         test="ArnEquals",
         variable="aws:SourceArn",
-        values=[sns_topic["EventTopic"]["arn"]],
+        values=[sns_topic.arn],
     )],
 )]))
 request_queue_policy = aws.sqs.QueuePolicy("requestQueuePolicy",
