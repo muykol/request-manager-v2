@@ -53,7 +53,7 @@ lambda_permission = aws.lambda_.Permission(f'{project_name}-LambdaPermission',
 )
 
 # Subscribe the Lambda function to the SNS topic
-sns_subscription = aws.sns.TopicSubscription(f'{project_name}-Subscription',
+snsLambda_subscription = aws.sns.TopicSubscription('snsLambda-Subscription',
     topic=sns_topic.arn,
     protocol='lambda',
     endpoint=lambda_function.arn
@@ -79,6 +79,12 @@ request_policy_document = sqs_queue.arn.apply(lambda arn: aws.iam.get_policy_doc
 request_queue_policy = aws.sqs.QueuePolicy("requestQueuePolicy",
     queue_url=sqs_queue.id,
     policy=request_policy_document.json)
+
+snsSqs_subscription = aws.sns.TopicSubscription('snsSqs-Subscription',
+    topic=sns_topic.arn,
+    protocol='sqs',
+    endpoint=sqs_queue.arn
+)
 
 
 # # Create an SQS queue policy to allow the SNS topic to publish to the SQS queue
