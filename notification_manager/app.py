@@ -53,7 +53,7 @@ def lambda_handler(event, context):
                             "Data": record['Sns']['Subject'],
                         },
                     },
-                    Source="dev.kolayemi@gmail.com",
+                    Source="olumuyiwa.kolayemi@slalom.com",
                 )
                 print(response)
 
