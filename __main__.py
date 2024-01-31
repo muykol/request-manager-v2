@@ -61,25 +61,44 @@ sns_subscription = aws.sns.TopicSubscription(f'{project_name}-Subscription',
 
 # Create an SQS queue
 sqs_queue = aws.sqs.Queue('request_manager_queue')
-
-# Create an SQS queue policy to allow the SNS topic to publish to the SQS queue
-queue_policy = sqs_queue.arn.apply(lambda arn: json.dumps({
-        "Version": "2012-10-17",
-        "Statement": [{
-            "Effect": "Allow",
-            "Principal": {"Service": "sns.amazonaws.com"},
-            "Action": "sqs:SendMessage",
-            "Resource": arn,
-            "Condition": {
-                "ArnEquals": {"aws:SourceArn": sns_topic.arn}
-            }
-        }]
-    }))
-queue_policy_resource = aws.sqs.QueuePolicy(
-    'request-manager-queue-policy',
+request_policy_document = sqs_queue.arn.apply(lambda arn: aws.iam.get_policy_document_output(statements=[aws.iam.GetPolicyDocumentStatementArgs(
+    sid="First",
+    effect="Allow",
+    principals=[aws.iam.GetPolicyDocumentStatementPrincipalArgs(
+        type="*",
+        identifiers=["*"],
+    )],
+    actions=["sqs:SendMessage"],
+    resources=[arn],
+    conditions=[aws.iam.GetPolicyDocumentStatementConditionArgs(
+        test="ArnEquals",
+        variable="aws:SourceArn",
+        values=[sns_topic["EventTopic"]["arn"]],
+    )],
+)]))
+request_queue_policy = aws.sqs.QueuePolicy("requestQueuePolicy",
     queue_url=sqs_queue.id,
-    policy=queue_policy # Here queue_policy is already a JSON string, not an Output object
-)
+    policy=request_policy_document.json)
+
+
+# # Create an SQS queue policy to allow the SNS topic to publish to the SQS queue
+# queue_policy = sqs_queue.arn.apply(lambda arn: json.dumps({
+#         "Version": "2012-10-17",
+#         "Statement": [{
+#             "Effect": "Allow",
+#             "Principal": {"Service": "sns.amazonaws.com"},
+#             "Action": "sqs:SendMessage",
+#             "Resource": arn,
+#             "Condition": {
+#                 "ArnEquals": {"aws:SourceArn": sns_topic.arn}
+#             }
+#         }]
+#     }))
+# queue_policy_resource = aws.sqs.QueuePolicy(
+#     'request-manager-queue-policy',
+#     queue_url=sqs_queue.id,
+#     policy=queue_policy # Here queue_policy is already a JSON string, not an Output object
+# )
 
 # SSM Parameter to store the SNS topic URL
 sns_topic_url_param = aws.ssm.Parameter('EventTopicArn',
