@@ -1,4 +1,4 @@
-name: notification_manager_deploy
+name: request_manager_service
 on:
   push:
     branches:
