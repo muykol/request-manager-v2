@@ -2,6 +2,7 @@
 
 import pulumi
 import pulumi_aws as aws
+import json 
 
 project_name = 'request_manager_pulumi_dojo'
 
@@ -58,20 +59,6 @@ sns_subscription = aws.sns.TopicSubscription(f'{project_name}-Subscription',
     endpoint=lambda_function.arn
 )
 
-# SSM Parameter to store the SNS topic URL
-sns_topic_url_param = aws.ssm.Parameter('EventTopicArn',
-    name='EventTopicArn',  # Name of the parameter
-    type='String',       # Type of the parameter (String, StringList, SecureString)
-    value=sns_topic.arn  # The actual value to store, here ARN is used as the URL identifier for the SNS Topic
-)
-
-# SSM Parameter to store the Lambda function name
-lambda_function_name_param = aws.ssm.Parameter('notificationManagerlambdaFunctionName',
-    name='notificationManager',    # Name of the parameter
-    type='String',               # Type of the parameter (String, StringList, SecureString)
-    value=lambda_function.name   # The actual value to store, which is the name of the Lambda Function
-)
-
 # Create an SQS queue
 sqs_queue = aws.sqs.Queue('request_manager_queue')
 
@@ -90,6 +77,20 @@ queue_policy = aws.sqs.QueuePolicy('request_manager_queue_policy',
             }
         }]
     })))
+)
+
+# SSM Parameter to store the SNS topic URL
+sns_topic_url_param = aws.ssm.Parameter('EventTopicArn',
+    name='EventTopicArn',  # Name of the parameter
+    type='String',       # Type of the parameter (String, StringList, SecureString)
+    value=sns_topic.arn  # The actual value to store, here ARN is used as the URL identifier for the SNS Topic
+)
+
+# SSM Parameter to store the Lambda function name
+lambda_function_name_param = aws.ssm.Parameter('contractProcessorName',
+    name='contractProcessor',    # Name of the parameter
+    type='String',               # Type of the parameter (String, StringList, SecureString)
+    value=lambda_function.name   # The actual value to store, which is the name of the Lambda Function
 )
 
 # Store the SQS queue URL in the AWS SSM Parameter Store
