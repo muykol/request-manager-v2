@@ -20,11 +20,27 @@ lambda_role = aws.iam.Role(f'{project_name}-lambdaRole',
     }"""
 )
 
-# Attach the AWSLambdaBasicExecutionRole policy to the role
-role_policy_attachment = aws.iam.RolePolicyAttachment('lambdaRoleAttachment',
-    role=lambda_role.name,
-    policy_arn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-)
+# List of Policy ARNs to attach to the IAM role
+policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+    "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+    "arn:aws:iam::aws:policy/AmazonSESFullAccess",
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+]
+
+# Attach the policies to the IAM role
+for index, policy_arn in enumerate(policy_arns):
+    attachment = aws.iam.RolePolicyAttachment(f"attachment-{index}", 
+        role=lambda_role.name,
+        policy_arn=policy_arn
+    )
+
+
+# # Attach the AWSLambdaBasicExecutionRole policy to the role
+# role_policy_attachment = aws.iam.RolePolicyAttachment('lambdaRoleAttachment',
+#     role=lambda_role.name,
+#     policy_arn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+# )
 
 # Lambda functions
 lambda_function = aws.lambda_.Function('notification-manager',
