@@ -50,19 +50,19 @@ lambda_function = aws.lambda_.Function('notification-manager',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./notification_manager")}),
     role=lambda_role.arn,
     handler='notification_manager.lambda_handler',
-    runtime='python3.10',
-    environment=aws.lambda_.FunctionEnvironmentArgs(
-        variables={
-            'SNS_TOPIC_ARN': sns_topic.arn
-        }
-    )
+    runtime='python3.10'
 )
 
 lambda_function = aws.lambda_.Function('contract_processor',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./contract_processor")}),
     role=lambda_role.arn,
     handler='contract_processor.lambda_handler',
-    runtime='python3.10'
+    runtime='python3.10',
+    environment=aws.lambda_.FunctionEnvironmentArgs(
+        variables={
+            'EVENT_TOPIC_ARN_PATH': sns_topic.arn
+        }
+    )
 )
 
 # Give the Lambda permission to be invoked by the SNS topic
