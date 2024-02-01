@@ -42,12 +42,20 @@ for index, policy_arn in enumerate(policy_arns):
 #     policy_arn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 # )
 
+# Define an SNS topic
+sns_topic = aws.sns.Topic('EventTopic')
+
 # Lambda functions
 lambda_function = aws.lambda_.Function('notification-manager',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./notification_manager")}),
     role=lambda_role.arn,
     handler='notification_manager.lambda_handler',
-    runtime='python3.10'
+    runtime='python3.10',
+    environment=aws.lambda_.FunctionEnvironmentArgs(
+        variables={
+            'SNS_TOPIC_ARN': sns_topic.arn
+        }
+    )
 )
 
 lambda_function = aws.lambda_.Function('contract_processor',
@@ -56,9 +64,6 @@ lambda_function = aws.lambda_.Function('contract_processor',
     handler='contract_processor.lambda_handler',
     runtime='python3.10'
 )
-
-# Define an SNS topic
-sns_topic = aws.sns.Topic('EventTopic')
 
 # Give the Lambda permission to be invoked by the SNS topic
 lambda_permission = aws.lambda_.Permission(f'{project_name}-LambdaPermission',
