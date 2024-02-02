@@ -1,10 +1,9 @@
+"""Contract Processor Lambda Function"""
 import json
-import boto3
-import sys
 import os
+import boto3
 
 SUCCESS=0
-
 
 def lambda_handler(event, context):
     """Sample pure Lambda function
@@ -14,32 +13,28 @@ def lambda_handler(event, context):
     event: dict, required
         API Gateway Lambda Proxy Input Format
 
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
-
     context: object, required
         Lambda Context runtime methods and attributes
-
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
 
     Returns
     ------
     API Gateway Lambda Proxy Output Format: dict
 
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
     print(json.dumps(event))
+    print(context)
     try:
         sns_client = boto3.client('sns')
 
         # Add status to event
-        event['Status']=SUCCESS
-        event['Type']="ContractStatus"
+        event['status']=SUCCESS
+        event['type']="ContractStatus"
         print(json.dumps(event))
 
         # Publish message to topic
         response = sns_client.publish(
             TopicArn=os.environ['TOPIC_ARN'],
-            Subject="EDP Workflow Status",
+            Subject="Workflow Status",
             Message=json.dumps(event)
         )
         print(response)

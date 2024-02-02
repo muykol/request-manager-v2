@@ -1,7 +1,8 @@
-'''Lambda function that subscribes to the EDP Event Topic
-    and sends EDP Request Status messages via email
+'''Lambda function that subscribes to the Event Topic
+    and sends Request Status messages via email
 '''
 import json
+import os
 import boto3
 
 SUCCESS=0
@@ -33,19 +34,19 @@ def lambda_handler(event, context):
             message=json.loads(record['Sns']['Message'])
 
             # send a notification email if message is a RequestStatus
-            if message['Type'] == 'RequestStatus':
+            if message['type'] == 'RequestStatus':
 
                 response = ses_client.send_email(
                     Destination={
                         "ToAddresses": [
-                            message['RequestorEmail'],
+                            message['requestorEmail'],
                         ],
                     },
                     Message={
                         "Body": {
                             "Text": {
                                 "Charset": CHARSET,
-                                "Data": message['Message'],
+                                "Data": message['message'],
                             }
                         },
                         "Subject": {
@@ -53,7 +54,7 @@ def lambda_handler(event, context):
                             "Data": record['Sns']['Subject'],
                         },
                     },
-                    Source="olumuyiwa.kolayemi@slalom.com",
+                    Source=os.environ['olumuyiwa.kolayemi@slalom.com'],
                 )
                 print(response)
 
@@ -61,3 +62,4 @@ def lambda_handler(event, context):
         # Send some context about this error to Lambda Logs
         print(e)
         raise e
+    
