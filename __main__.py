@@ -72,7 +72,7 @@ lambda_function = aws.lambda_.Function('contract_processor',
     runtime='python3.10',
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
-            'EventTopicArn': sns_topic.arn
+            'TOPIC_ARN': sns_topic.arn
         }
     )
 )

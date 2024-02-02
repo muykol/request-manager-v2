@@ -38,7 +38,7 @@ def lambda_handler(event, context):
 
         # Publish message to topic
         response = sns_client.publish(
-            TopicArn=os.environ['EventTopicArn'],
+            TopicArn=os.environ['TOPIC_ARN'],
             Subject="EDP Workflow Status",
             Message=json.dumps(event)
         )
@@ -53,6 +53,6 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "message sent via " + os.environ['EventTopicArn'],
+            "message": "message sent via " + os.environ['TOPIC_ARN'],
         }),
     }
