@@ -44,7 +44,7 @@ for index, policy_arn in enumerate(policy_arns):
 ####===== Notification Manager Code ==================#######
 # Define an SNS topic
 sns_topic = aws.sns.Topic("EventTopic",
-                          display_name="EventTopic")
+                          name="EventTopic")
 
 # Define notification manager Lambda functions
 lambda_function = aws.lambda_.Function('notification-manager',
