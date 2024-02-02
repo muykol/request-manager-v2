@@ -35,12 +35,6 @@ for index, policy_arn in enumerate(policy_arns):
         policy_arn=policy_arn
     )
 
-
-# # Attach the AWSLambdaBasicExecutionRole policy to the role
-# role_policy_attachment = aws.iam.RolePolicyAttachment('lambdaRoleAttachment',
-#     role=lambda_role.name,
-#     policy_arn='arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-# )
 ####===== Notification Manager Code ==================#######
 # Define an SNS topic
 sns_topic = aws.sns.Topic("EventTopic",
