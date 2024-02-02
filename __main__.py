@@ -44,7 +44,7 @@ sns_topic = aws.sns.Topic("EventTopic",
 lambda_function = aws.lambda_.Function('notification-manager',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./notification_manager")}),
     role=lambda_role.arn,
-    handler='notification_manager.lambda_handler',
+    handler='app.lambda_handler',
     runtime='python3.10'
 )
 
@@ -68,7 +68,7 @@ snsLambda_subscription = aws.sns.TopicSubscription('snsLambda-Subscription',
 lambda_function = aws.lambda_.Function('contract_processor',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./contract_processor")}),
     role=lambda_role.arn,
-    handler='contract_processor.lambda_handler',
+    handler='app.lambda_handler',
     runtime='python3.10',
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
