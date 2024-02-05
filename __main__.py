@@ -53,7 +53,7 @@ lambda_function = aws.lambda_.Function('notification-manager',
     runtime='python3.10',
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
-            'SES_EMAIL': email_identity.arn
+            'SES_EMAIL': email_identity.email
         }
     )
 )
