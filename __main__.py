@@ -36,6 +36,11 @@ for index, policy_arn in enumerate(policy_arns):
     )
 
 ####===== Notification Manager Code ==================#######
+# Register an email address with AWS SES
+email_identity = aws.ses.EmailIdentity("my-email-identity",
+    email="dev.kolayemi@gmail.com"  
+)
+
 # Define an SNS topic
 sns_topic = aws.sns.Topic("EventTopic",
                           name="EventTopic")
@@ -45,7 +50,12 @@ lambda_function = aws.lambda_.Function('notification-manager',
     code=pulumi.AssetArchive({".": pulumi.FileArchive("./notification_manager")}),
     role=lambda_role.arn,
     handler='app.lambda_handler',
-    runtime='python3.10'
+    runtime='python3.10',
+    environment=aws.lambda_.FunctionEnvironmentArgs(
+        variables={
+            'SES_EMAIL': email_identity.arn
+        }
+    )
 )
 
 # Give the notification Lambda permission to be invoked by the SNS topic
@@ -130,6 +140,7 @@ ssm_parameter = aws.ssm.Parameter('request_manager_queue_url',
 )
 
 # Export the ARNs of the SNS topic, the Lambda function and the parameter names 
+pulumi.export('email_identity_arn', email_identity.arn)
 pulumi.export('sns_topic_arn', sns_topic.arn)
 pulumi.export('lambda_function_arn', lambda_function.arn)
 pulumi.export('sns_topic_url_param_name', sns_topic_url_param.name)
